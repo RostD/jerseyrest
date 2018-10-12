@@ -1,34 +1,30 @@
 package local.dubrovin.models;
 
 
-
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(name = "email_types")
-@Data
+@Table(name = "books")
 @XmlRootElement
-public class EmailType {
+@Data
+public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @XmlElement
     private Integer id;
 
     @Column(name = "name")
-    @XmlElement
-    @NotEmpty(message = "name can't be empty")
+    @NotEmpty(message = "name is cannot be empty")
     private String name;
 
-    public EmailType() {
+    public Book() {
     }
 
-    public EmailType(String name) {
+    public Book(String name) {
         this.name = name;
     }
 }
