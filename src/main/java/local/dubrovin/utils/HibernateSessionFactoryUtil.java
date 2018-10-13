@@ -1,6 +1,8 @@
 package local.dubrovin.utils;
 
 import local.dubrovin.models.Book;
+import local.dubrovin.models.Contact;
+import local.dubrovin.models.Email;
 import local.dubrovin.models.EmailType;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -17,6 +19,8 @@ public class HibernateSessionFactoryUtil {
             Configuration configuration = new Configuration().configure();
             configuration.addAnnotatedClass(EmailType.class);
             configuration.addAnnotatedClass(Book.class);
+            configuration.addAnnotatedClass(Email.class);
+            configuration.addAnnotatedClass(Contact.class);
             StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
             factory = configuration.buildSessionFactory(builder.build());
         }

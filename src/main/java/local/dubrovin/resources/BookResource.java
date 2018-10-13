@@ -25,9 +25,9 @@ public class BookResource {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{bookId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getType(@PathParam("id") Integer id) {
+    public Response getType(@PathParam("bookId") Integer id) {
         BookService service = new BookService();
         Book book = service.find(id);
 
@@ -72,9 +72,9 @@ public class BookResource {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{bookId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateType(@PathParam("id") Integer id, Book book) {
+    public Response updateType(@PathParam("bookId") Integer id, Book book) {
 
         BookService service = new BookService();
         Book oldBook = service.find(id);
@@ -108,8 +108,8 @@ public class BookResource {
     }
 
     @DELETE
-    @Path("/{id}")
-    public Response deleteType(@PathParam("id") Integer id) {
+    @Path("/{bookId}")
+    public Response deleteType(@PathParam("bookId") Integer id) {
         BookService service = new BookService();
         Book book = service.find(id);
 
@@ -121,5 +121,10 @@ public class BookResource {
 
         service.delete(book);
         return Response.ok().build();
+    }
+
+    @Path("/{bookId}/contacts")
+    public ContactResource getContacts() {
+        return new ContactResource();
     }
 }
