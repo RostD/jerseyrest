@@ -1,7 +1,9 @@
 package local.dubrovin.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @Table(name = "books")
 @XmlRootElement
 @Data
+@EqualsAndHashCode
 public class Book {
 
     @Id
@@ -25,7 +28,7 @@ public class Book {
     private String name;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Transient
+    @JsonIgnore
     private List<Contact> contacts;
 
     public Book() {

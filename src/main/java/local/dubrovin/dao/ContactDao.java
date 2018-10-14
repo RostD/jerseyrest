@@ -7,7 +7,7 @@ import java.util.List;
 public interface ContactDao {
     public Contact findById(Integer bookId, Integer contactId);
 
-    public void save(Contact contact);
+    public void save(Integer bookId, Contact contact);
 
     public void update(Contact contact);
 

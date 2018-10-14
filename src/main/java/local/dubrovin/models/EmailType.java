@@ -1,6 +1,8 @@
 package local.dubrovin.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -14,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "email_types")
 @XmlRootElement
+@EqualsAndHashCode
 public class EmailType {
 
     @Id
@@ -33,6 +36,8 @@ public class EmailType {
 
     @OneToMany(mappedBy = "type")
     @Getter
+    @Setter
+    @JsonIgnore
     private List<Email> emails;
 
     public EmailType() {

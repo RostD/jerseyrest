@@ -1,5 +1,6 @@
 package local.dubrovin.resources;
 
+import local.dubrovin.dao.NotFoundException;
 import local.dubrovin.models.Book;
 import local.dubrovin.services.BookService;
 import local.dubrovin.utils.ValidatorFactoryUtil;
@@ -19,31 +20,38 @@ import java.util.Set;
 public class BookResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Book> getBooks() {
+    public Response getBooks() {
         BookService service = new BookService();
-        return service.findAll();
+        try {
+            List<Book> list = service.findAll();
+            return Response.ok(list).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
+                    .build();
+        }
     }
 
     @GET
     @Path("/{bookId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getType(@PathParam("bookId") Integer id) {
+    public Response getBook(@PathParam("bookId") Integer id) {
         BookService service = new BookService();
-        Book book = service.find(id);
 
-        if (book == null) {
+        try {
+            Book book = service.find(id);
+            return Response.ok(book).build();
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\":\"Not found\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
-
-        return Response.ok(book).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createType(Book book, @Context UriInfo uriInfo) {
+    public Response createBook(Book book, @Context UriInfo uriInfo) {
 
         if (book == null) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -74,7 +82,7 @@ public class BookResource {
     @PUT
     @Path("/{bookId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateType(@PathParam("bookId") Integer id, Book book) {
+    public Response updateBook(@PathParam("bookId") Integer id, Book book) {
 
         BookService service = new BookService();
         Book oldBook = service.find(id);
@@ -109,18 +117,17 @@ public class BookResource {
 
     @DELETE
     @Path("/{bookId}")
-    public Response deleteType(@PathParam("bookId") Integer id) {
+    public Response deleteBook(@PathParam("bookId") Integer id) {
         BookService service = new BookService();
-        Book book = service.find(id);
-
-        if (book == null) {
+        try {
+            Book book = service.find(id);
+            service.delete(book);
+            return Response.ok().build();
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("{\"message\":\"Not found\"}")
                     .build();
         }
-
-        service.delete(book);
-        return Response.ok().build();
     }
 
     @Path("/{bookId}/contacts")

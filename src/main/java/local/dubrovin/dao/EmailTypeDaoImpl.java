@@ -11,40 +11,46 @@ public class EmailTypeDaoImpl implements local.dubrovin.dao.EmailTypeDao {
 
     @Override
     public EmailType findById(Integer id) {
-        return HibernateSessionFactoryUtil.getFactory().openSession().get(EmailType.class,id);
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            EmailType type = session.get(EmailType.class, id);
+            if (type == null) {
+                throw new NotFoundException("Email-type not found");
+            }
+            return type;
+        }
     }
 
     @Override
     public void save(EmailType emailType) {
-        Session session = HibernateSessionFactoryUtil.getFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        session.save(emailType);
-        transaction.commit();
-        session.close();
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.save(emailType);
+            transaction.commit();
+        }
     }
 
     @Override
     public void update(EmailType emailType) {
-        Session session = HibernateSessionFactoryUtil.getFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        session.update(emailType);
-        transaction.commit();
-        session.close();
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.update(emailType);
+            transaction.commit();
+        }
     }
 
     @Override
     public void delete(EmailType emailType) {
-        Session session = HibernateSessionFactoryUtil.getFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        session.delete(emailType);
-        transaction.commit();
-        session.close();
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.delete(emailType);
+            transaction.commit();
+        }
     }
 
     @Override
     public List<EmailType> findAll() {
-        Session session = HibernateSessionFactoryUtil.getFactory().openSession();
-        List<EmailType> types = (List<EmailType>) session.createQuery("From EmailType").list();
-        return types;
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            return (List<EmailType>) session.createQuery("From EmailType").list();
+        }
     }
 }

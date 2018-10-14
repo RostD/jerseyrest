@@ -1,5 +1,9 @@
 package local.dubrovin.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -9,6 +13,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "contacts")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@EqualsAndHashCode
 public class Contact {
 
     @Id
@@ -18,7 +24,7 @@ public class Contact {
     private Integer id;
 
     @Column(name = "name")
-    @NotEmpty
+    @NotEmpty(message = "name cannot be empty")
     @Getter
     @Setter
     private String name;
@@ -36,10 +42,13 @@ public class Contact {
     @ManyToOne
     @JoinColumn(name = "book_id")
     @Getter
+    @Setter
+    @JsonIgnore
     private Book book;
 
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
     @Getter
     @Setter
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Email> emails;
 }
