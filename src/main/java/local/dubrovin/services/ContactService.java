@@ -23,12 +23,12 @@ public class ContactService {
         this.contactDao.save(this.bookId, contact);
     }
 
-    public void update(Contact contact) {
-        this.contactDao.update(contact);
+    public void update(Integer contactId, Contact contact) {
+        this.contactDao.update(this.bookId, contactId, contact);
     }
 
-    public void delete(Contact contact) {
-        this.contactDao.delete(contact);
+    public void delete(Integer contactId) {
+        this.contactDao.delete(this.bookId, contactId);
     }
 
     public List<Contact> findAll() {

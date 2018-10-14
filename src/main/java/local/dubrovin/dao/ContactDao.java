@@ -9,9 +9,9 @@ public interface ContactDao {
 
     public void save(Integer bookId, Contact contact);
 
-    public void update(Contact contact);
+    public void update(Integer bookId, Integer contactId, Contact contact);
 
-    public void delete(Contact contact);
+    public void delete(Integer bookId, Integer contactId);
 
     public List<Contact> findAll(Integer bookId);
 }

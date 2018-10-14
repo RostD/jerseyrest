@@ -43,13 +43,26 @@ public class ContactDaoImpl extends AbstractDao implements ContactDao {
     }
 
     @Override
-    public void update(Contact contact) {
-
+    public void update(Integer bookId, Integer contactId, Contact contact) {
+        Contact oldContact = this.findById(bookId, contactId);
+        contact.setBook(oldContact.getBook());
+        this.validateModel(contact);
+        contact.setId(oldContact.getId());
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.update(contact);
+            transaction.commit();
+        }
     }
 
     @Override
-    public void delete(Contact contact) {
-
+    public void delete(Integer bookId, Integer contactId) {
+        Contact contact = this.findById(bookId, contactId);
+        try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.delete(contact);
+            transaction.commit();
+        }
     }
 
     @Override

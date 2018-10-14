@@ -72,6 +72,43 @@ public class ContactResource {
                 .build();
     }
 
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{contactId}")
+    public Response updateContact(@PathParam("bookId") Integer bookId, @PathParam("contactId") Integer contactId, Contact contact) {
+        if (contact == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"message\":\"Data is can't be empty\"}")
+                    .build();
+        }
+
+        ContactService service = new ContactService(bookId);
+        try {
+            service.update(contactId, contact);
+            return Response.ok(contact).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\":\"" + e.getMessage() + "\"}").build();
+        } catch (ValidateException e) {
+            return Response.status(422)
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{contactId}")
+    public Response deleteContact(@PathParam("bookId") Integer bookId, @PathParam("contactId") Integer contactId) {
+        ContactService service = new ContactService(bookId);
+        try {
+            service.delete(contactId);
+            return Response.ok("").build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"message\":\"" + e.getMessage() + "\"}").build();
+        }
+    }
+
     @Path("/{contactId}/emails")
     public EmailResource getEmails() {
         return new EmailResource();
