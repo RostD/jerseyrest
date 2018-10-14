@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 
 import java.util.List;
 
-public class BookDaoImpl implements BookDao {
+public class BookDaoImpl extends AbstractDao implements BookDao {
     @Override
     public Book findById(Integer id) {
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
@@ -22,6 +22,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void save(Book book) {
+        this.validateModel(book);
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.save(book);
@@ -30,7 +31,10 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public void update(Book book) {
+    public void update(Integer bookId, Book book) {
+        Book oldBook = this.findById(bookId);
+        this.validateModel(book);
+        book.setId(oldBook.getId());
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.update(book);
@@ -39,7 +43,8 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public void delete(Book book) {
+    public void delete(Integer bookId) {
+        Book book = this.findById(bookId);
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.delete(book);

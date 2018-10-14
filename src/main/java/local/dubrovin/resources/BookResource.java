@@ -1,12 +1,10 @@
 package local.dubrovin.resources;
 
 import local.dubrovin.dao.NotFoundException;
+import local.dubrovin.dao.ValidateException;
 import local.dubrovin.models.Book;
 import local.dubrovin.services.BookService;
-import local.dubrovin.utils.ValidatorFactoryUtil;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -14,7 +12,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
 
 @Path("/books")
 public class BookResource {
@@ -59,24 +56,19 @@ public class BookResource {
                     .build();
         }
 
-        Validator validator = ValidatorFactoryUtil.getValidator();
-        Set<ConstraintViolation<Book>> constraintViolationSet = validator.validate(book);
-
-        if (constraintViolationSet.size() > 0) {
+        BookService service = new BookService();
+        try {
+            service.save(book);
+            String newId = String.valueOf(book.getId());
+            URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
+            return Response.created(uri)
+                    .entity(book)
+                    .build();
+        } catch (ValidateException e) {
             return Response.status(422)
-                    .entity("{\"message\":\"" + constraintViolationSet.iterator().next().getMessage() + "\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
-
-        BookService service = new BookService();
-        service.save(book);
-
-        String newId = String.valueOf(book.getId());
-        URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
-        return Response.created(uri)
-                .entity(book)
-                .build();
-
     }
 
     @PUT
@@ -84,33 +76,22 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateBook(@PathParam("bookId") Integer id, Book book) {
 
-        BookService service = new BookService();
-        Book oldBook = service.find(id);
-
-        if (oldBook == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\":\"Not found\"}")
-                    .build();
-        }
-
         if (book == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        book.setId(id);
-        if (book.equals(oldBook)) {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        }
 
-        Validator validator = ValidatorFactoryUtil.getValidator();
-        Set<ConstraintViolation<Book>> constraintViolationSet = validator.validate(book);
-
-        if (constraintViolationSet.size() > 0) {
+        BookService service = new BookService();
+        try {
+            service.update(id, book);
+        } catch (ValidateException e) {
             return Response.status(422)
-                    .entity("{\"message\":\"" + constraintViolationSet.iterator().next().getMessage() + "\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
-
-        service.update(book);
 
         return Response.ok(book).build();
     }
@@ -120,12 +101,11 @@ public class BookResource {
     public Response deleteBook(@PathParam("bookId") Integer id) {
         BookService service = new BookService();
         try {
-            Book book = service.find(id);
-            service.delete(book);
+            service.delete(id);
             return Response.ok().build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\":\"Not found\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
     }

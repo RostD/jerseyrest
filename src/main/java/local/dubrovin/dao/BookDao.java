@@ -7,11 +7,11 @@ import java.util.List;
 public interface BookDao {
     public Book findById(Integer id);
 
-    public void save(Book emailType);
+    public void save(Book book);
 
-    public void update(Book emailType);
+    public void update(Integer bookId, Book emailType);
 
-    public void delete(Book emailType);
+    public void delete(Integer bookId);
 
     public List<Book> findAll();
 }

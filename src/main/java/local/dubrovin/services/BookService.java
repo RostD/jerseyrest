@@ -17,12 +17,12 @@ public class BookService {
         this.bookDao.save(book);
     }
 
-    public void update(Book book) {
-        this.bookDao.update(book);
+    public void update(Integer bookId, Book book) {
+        this.bookDao.update(bookId, book);
     }
 
-    public void delete(Book book) {
-        this.bookDao.delete(book);
+    public void delete(Integer bookId) {
+        this.bookDao.delete(bookId);
     }
 
     public List<Book> findAll() {
