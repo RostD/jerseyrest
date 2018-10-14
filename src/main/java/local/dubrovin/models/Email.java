@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -26,6 +27,7 @@ public class Email {
     @Getter
     @Setter
     @NotEmpty(message = "email is cannot be empty")
+    @Length(max = 50, message = "The field must be less than 50 characters")
     private String email;
 
     @ManyToOne

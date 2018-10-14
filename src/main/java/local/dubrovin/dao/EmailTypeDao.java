@@ -9,9 +9,9 @@ public interface EmailTypeDao {
 
     public void save(EmailType emailType);
 
-    public void update(EmailType emailType);
+    public void update(Integer typeId, EmailType emailType);
 
-    public void delete(EmailType emailType);
+    public void delete(Integer id);
 
     public List<EmailType> findAll();
 }

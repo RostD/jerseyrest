@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 
 import java.util.List;
 
-public class EmailTypeDaoImpl implements local.dubrovin.dao.EmailTypeDao {
+public class EmailTypeDaoImpl extends AbstractDao implements local.dubrovin.dao.EmailTypeDao {
 
     @Override
     public EmailType findById(Integer id) {
@@ -22,6 +22,7 @@ public class EmailTypeDaoImpl implements local.dubrovin.dao.EmailTypeDao {
 
     @Override
     public void save(EmailType emailType) {
+        this.validateModel(emailType);
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.save(emailType);
@@ -30,7 +31,10 @@ public class EmailTypeDaoImpl implements local.dubrovin.dao.EmailTypeDao {
     }
 
     @Override
-    public void update(EmailType emailType) {
+    public void update(Integer typeId, EmailType emailType) {
+        EmailType oldType = this.findById(typeId);
+        this.validateModel(emailType);
+        emailType.setId(oldType.getId());
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.update(emailType);
@@ -39,7 +43,8 @@ public class EmailTypeDaoImpl implements local.dubrovin.dao.EmailTypeDao {
     }
 
     @Override
-    public void delete(EmailType emailType) {
+    public void delete(Integer id) {
+        EmailType emailType = this.findById(id);
         try (Session session = HibernateSessionFactoryUtil.getFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.delete(emailType);

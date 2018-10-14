@@ -1,11 +1,10 @@
 package local.dubrovin.resources;
 
+import local.dubrovin.dao.NotFoundException;
+import local.dubrovin.dao.ValidateException;
 import local.dubrovin.models.EmailType;
 import local.dubrovin.services.EmailTypeService;
-import local.dubrovin.utils.ValidatorFactoryUtil;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -13,7 +12,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
 
 @Path("/email-types")
 public class EmailTypeResource {
@@ -30,15 +28,14 @@ public class EmailTypeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getType(@PathParam("id") Integer id) {
         EmailTypeService service = new EmailTypeService();
-        EmailType type = service.find(id);
-
-        if (type == null) {
+        try {
+            EmailType type = service.find(id);
+            return Response.ok(type).build();
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\":\"Not found\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
-
-        return Response.ok(type).build();
     }
 
     @POST
@@ -52,23 +49,20 @@ public class EmailTypeResource {
                     .build();
         }
 
-        Validator validator = ValidatorFactoryUtil.getValidator();
-        Set<ConstraintViolation<EmailType>> constraintViolationSet = validator.validate(type);
-
-        if (constraintViolationSet.size() > 0) {
+        EmailTypeService service = new EmailTypeService();
+        try {
+            service.save(type);
+            String newId = String.valueOf(type.getId());
+            URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
+            return Response.created(uri)
+                    .entity(type)
+                    .build();
+        } catch (ValidateException e) {
             return Response.status(422)
-                    .entity("{\"message\":\"" + constraintViolationSet.iterator().next().getMessage() + "\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
 
-        EmailTypeService service = new EmailTypeService();
-        service.save(type);
-
-        String newId = String.valueOf(type.getId());
-        URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
-        return Response.created(uri)
-                .entity(type)
-                .build();
 
     }
 
@@ -77,50 +71,36 @@ public class EmailTypeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateType(@PathParam("id") Integer id, EmailType type) {
 
-        EmailTypeService service = new EmailTypeService();
-        EmailType oldType = service.find(id);
-
-        if (oldType == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\":\"Not found\"}")
-                    .build();
-        }
-
         if (type == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        type.setId(id);
-        if (type.equals(oldType)) {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        }
-
-        Validator validator = ValidatorFactoryUtil.getValidator();
-        Set<ConstraintViolation<EmailType>> constraintViolationSet = validator.validate(type);
-
-        if (constraintViolationSet.size() > 0) {
+        EmailTypeService service = new EmailTypeService();
+        try {
+            service.update(id, type);
+            return Response.ok(type).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (ValidateException e) {
             return Response.status(422)
-                    .entity("{\"message\":\"" + constraintViolationSet.iterator().next().getMessage() + "\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
 
-        service.update(type);
-
-        return Response.ok(type).build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteType(@PathParam("id") Integer id) {
         EmailTypeService service = new EmailTypeService();
-        EmailType type = service.find(id);
-
-        if (type == null) {
+        try {
+            service.delete(id);
+            return Response.ok().build();
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"message\":\"Not found\"}")
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
                     .build();
         }
-
-        service.delete(type);
-        return Response.ok().build();
     }
 }

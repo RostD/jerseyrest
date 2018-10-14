@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -25,16 +26,19 @@ public class Contact {
 
     @Column(name = "name")
     @NotEmpty(message = "name cannot be empty")
+    @Length(max = 50, message = "The field must be less than 50 characters")
     @Getter
     @Setter
     private String name;
 
     @Column(name = "surname")
+    @Length(max = 50, message = "The field must be less than 50 characters")
     @Getter
     @Setter
     private String surname;
 
     @Column(name = "address")
+    @Length(max = 200, message = "The field must be less than 200 characters")
     @Getter
     @Setter
     private String address;

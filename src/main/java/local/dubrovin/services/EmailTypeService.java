@@ -22,11 +22,11 @@ public class EmailTypeService {
         return this.emailTypeDao.findAll();
     }
 
-    public void update(EmailType type) {
-         this.emailTypeDao.update(type);
+    public void update(Integer typeId, EmailType type) {
+        this.emailTypeDao.update(typeId, type);
     }
 
-    public void delete(EmailType type) {
-        this.emailTypeDao.delete(type);
+    public void delete(Integer id) {
+        this.emailTypeDao.delete(id);
     }
 }
