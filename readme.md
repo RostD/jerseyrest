@@ -3,7 +3,7 @@
 It is a simple REST-API service "Address-book"
 
 ## To feel
- You can test the API in <a href="https://app.swaggerhub.com/apis/Dubrovin/addressBook/1#/">Swagger</a>
+ You can test the API in <a href="https://app.swaggerhub.com/apis-docs/Dubrovin/addressBook/1">Swagger</a>
 
 ## Technology stack
 
